@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Memoria — La galería viva de tu evento</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400&family=Work+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --cream:#F6F2EA;
+    --paper:#FBF8F3;
+    --ink:#1B1712;
+    --ink-soft:#4A443C;
+    --rust:#B15C3F;
+    --rust-dark:#8C4830;
+    --gold:#B08D57;
+    --line:#E4DDCF;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--cream);
+    color:var(--ink);
+    font-family:'Work Sans', sans-serif;
+    font-weight:400;
+    overflow-x:hidden;
+  }
+  h1,h2,h3,.serif{
+    font-family:'Fraunces', serif;
+    font-weight:400;
+    letter-spacing:-0.01em;
+  }
+  a{color:inherit; text-decoration:none;}
+  img{display:block; max-width:100%;}
+  .wrap{
+    max-width:1240px;
+    margin:0 auto;
+    padding:0 32px;
+  }
+  .eyebrow{
+    font-size:12.5px;
+    letter-spacing:0.18em;
+    text-transform:uppercase;
+    color:var(--rust);
+    font-weight:600;
+  }
+
+  /* ---------- NAV ---------- */
+  nav{
+    position:fixed; top:0; left:0; right:0; z-index:50;
+    display:flex; align-items:center; justify-content:space-between;
+    padding:22px 40px;
+    mix-blend-mode:normal;
+    transition:background .4s ease, padding .4s ease, box-shadow .4s ease;
+  }
+  nav.scrolled{
+    background:rgba(246,242,234,0.92);
+    backdrop-filter:blur(10px);
+    padding:14px 40px;
+    box-shadow:0 1px 0 var(--line);
+  }
+  .logo{
+    font-family:'Fraunces', serif;
+    font-size:21px;
+    letter-spacing:0.01em;
+    color:#fff;
+    transition:color .4s ease;
+  }
+  .logo span{color:#E8C9A0; font-style:italic; transition:color .4s ease;}
+  .nav-links{
+    display:flex; gap:38px; align-items:center;
+    font-size:13.5px; letter-spacing:0.03em; text-transform:uppercase;
+    color:#fff;
+    transition:color .4s ease;
+  }
+  .nav-links a{opacity:.85; transition:opacity .2s;}
+  .nav-links a:hover{opacity:1;}
+  .nav-cta{
+    border:1px solid rgba(255,255,255,0.7); color:#fff; padding:9px 20px;
+    font-size:12.5px; letter-spacing:0.05em; text-transform:uppercase;
+    transition:background .25s, color .25s, border-color .4s ease;
+  }
+  .nav-cta:hover{background:#fff; color:var(--ink);}
+  nav.scrolled .logo{color:var(--ink);}
+  nav.scrolled .logo span{color:var(--rust);}
+  nav.scrolled .nav-links{color:var(--ink);}
+  nav.scrolled .nav-cta{border-color:var(--ink); color:var(--ink);}
+  nav.scrolled .nav-cta:hover{background:var(--ink); color:var(--paper);}
+  @media(max-width:820px){ .nav-links{display:none;} }
+
+  /* ---------- HERO ---------- */
+  .hero{
+    position:relative;
+    height:100vh; min-height:640px;
+    display:flex; align-items:flex-end;
+    overflow:hidden;
+  }
+  .hero-bg{
+    position:absolute; inset:0;
+    background:
+      radial-gradient(ellipse 45% 55% at 18% 22%, rgba(232,201,160,0.55), transparent 60%),
+      radial-gradient(ellipse 35% 45% at 82% 15%, rgba(177,92,63,0.5), transparent 60%),
+      radial-gradient(ellipse 60% 60% at 50% 85%, rgba(60,44,32,0.9), transparent 70%),
+      radial-gradient(circle at 30% 65%, rgba(232,201,160,0.35) 0%, transparent 2.2%),
+      radial-gradient(circle at 62% 40%, rgba(232,201,160,0.3) 0%, transparent 1.6%),
+      radial-gradient(circle at 78% 68%, rgba(232,201,160,0.28) 0%, transparent 1.8%),
+      radial-gradient(circle at 12% 48%, rgba(232,201,160,0.25) 0%, transparent 1.4%),
+      radial-gradient(circle at 88% 30%, rgba(232,201,160,0.3) 0%, transparent 1.5%),
+      radial-gradient(circle at 45% 20%, rgba(232,201,160,0.22) 0%, transparent 1.3%),
+      linear-gradient(160deg, #241c15 0%, #3a2c20 45%, #4d372a 100%);
+    transform:scale(1.08);
+  }
+  .hero-bg::after{
+    content:''; position:absolute; inset:0; opacity:0.5; mix-blend-mode:overlay;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+  .photo-fallback{
+    position:absolute; inset:0; width:100%; height:100%; object-fit:cover;
+    opacity:0; transition:opacity .8s ease;
+  }
+  .photo-fallback.loaded{opacity:1;}
+  .hero .photo-fallback{object-position:center 32%; transform:scale(1.08); filter:saturate(0.9);}
+  .hero-scrim{
+    position:absolute; inset:0;
+    background:linear-gradient(180deg, rgba(20,16,12,0.15) 0%, rgba(20,16,12,0.1) 40%, rgba(20,16,12,0.75) 100%);
+  }
+  .hero-content{
+    position:relative; z-index:2;
+    padding:0 40px 80px;
+    width:100%;
+    color:#fff;
+  }
+  .hero-tag{
+    font-size:12.5px; letter-spacing:0.22em; text-transform:uppercase;
+    color:#E8C9A0; font-weight:600; margin-bottom:22px; display:block;
+  }
+  .hero h1{
+    font-size:clamp(38px, 6.4vw, 92px);
+    line-height:0.98;
+    max-width:980px;
+    color:#fff;
+    font-weight:400;
+  }
+  .hero h1 em{color:#E8C9A0; font-style:italic;}
+  .hero-sub{
+    margin-top:26px;
+    font-size:17px;
+    max-width:480px;
+    color:rgba(255,255,255,0.82);
+    font-weight:300;
+    line-height:1.6;
+  }
+  .hero-actions{
+    margin-top:38px;
+    display:flex; gap:16px; flex-wrap:wrap; align-items:center;
+  }
+  .btn-primary{
+    background:var(--rust); color:#fff;
+    padding:15px 30px;
+    font-size:13.5px; letter-spacing:0.05em; text-transform:uppercase; font-weight:500;
+    transition:background .25s, transform .25s;
+  }
+  .btn-primary:hover{background:var(--rust-dark); transform:translateY(-1px);}
+  .btn-ghost{
+    border:1px solid rgba(255,255,255,0.55); color:#fff;
+    padding:14px 28px;
+    font-size:13.5px; letter-spacing:0.05em; text-transform:uppercase;
+    transition:background .25s;
+  }
+  .btn-ghost:hover{background:rgba(255,255,255,0.12);}
+  .scroll-cue{
+    position:absolute; right:40px; bottom:36px; z-index:2;
+    color:rgba(255,255,255,0.7);
+    font-size:11.5px; letter-spacing:0.15em; text-transform:uppercase;
+    writing-mode:vertical-rl;
+    display:flex; align-items:center; gap:12px;
+  }
+  .scroll-cue::after{
+    content:''; width:1px; height:52px; background:rgba(255,255,255,0.5);
+  }
+
+  /* ---------- REVEAL ---------- */
+  .reveal{
+    opacity:0; transform:translateY(38px);
+    transition:opacity 1s cubic-bezier(.2,.7,.2,1), transform 1s cubic-bezier(.2,.7,.2,1);
+  }
+  .reveal.is-visible{opacity:1; transform:translateY(0);}
+  .reveal-scale{opacity:0; transform:scale(0.94);}
+  .reveal-scale.is-visible{opacity:1; transform:scale(1);}
+  .delay-1{transition-delay:.12s;}
+  .delay-2{transition-delay:.24s;}
+  .delay-3{transition-delay:.36s;}
+
+  /* ---------- MANIFESTO ---------- */
+  .manifesto{
+    padding:170px 0 140px;
+    text-align:center;
+  }
+  .manifesto .eyebrow{display:block; margin-bottom:26px;}
+  .manifesto h2{
+    font-size:clamp(28px, 4vw, 46px);
+    line-height:1.28;
+    max-width:900px;
+    margin:0 auto;
+    font-weight:400; color:var(--ink);
+  }
+  .manifesto h2 i{color:var(--rust); font-style:italic;}
+
+  /* ---------- STEPS ---------- */
+  .steps{padding:40px 0 160px;}
+  .step-row{
+    display:grid; grid-template-columns:1fr 1fr;
+    gap:80px; align-items:center;
+    padding:90px 0;
+    border-top:1px solid var(--line);
+  }
+  .step-row:first-child{border-top:none;}
+  .step-row.rev .step-media{order:2;}
+  .step-media{
+    aspect-ratio:4/3; overflow:hidden; position:relative;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .step-media svg{width:34%; position:relative; z-index:2;}
+  .step-media::after{
+    content:''; position:absolute; inset:0; opacity:0.35; mix-blend-mode:overlay;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+  .tone-1{background:linear-gradient(135deg,#e7ded0,#d8c9ac);}
+  .tone-2{background:linear-gradient(135deg,#c98a68,#a8543a);}
+  .tone-3{background:linear-gradient(135deg,#3a2c20,#5c4530);}
+  .step-media svg{stroke:var(--ink); color:var(--ink); position:relative; z-index:2; transition:opacity .4s;}
+  .tone-2 svg, .tone-3 svg{color:var(--cream); stroke:var(--cream);}
+  .step-media.has-photo svg{opacity:0;}
+  .step-media .photo-fallback{z-index:1;}
+  .step-num{
+    font-family:'Fraunces', serif; font-style:italic; font-size:15px;
+    color:var(--rust); margin-bottom:18px; display:block;
+  }
+  .step-text h3{
+    font-size:clamp(26px,3vw,38px); font-weight:400; margin-bottom:18px; line-height:1.15;
+  }
+  .step-text p{
+    font-size:15.5px; color:var(--ink-soft); line-height:1.7; max-width:420px; font-weight:300;
+  }
+  @media(max-width:820px){
+    .step-row, .step-row.rev .step-media{grid-template-columns:1fr; order:0;}
+    .step-row{grid-template-columns:1fr; gap:34px; padding:56px 0;}
+  }
+
+  /* ---------- FEATURES ---------- */
+  .features{padding:20px 0 160px;}
+  .features-head{max-width:620px; margin-bottom:70px;}
+  .features-head h2{font-size:clamp(30px,4vw,48px); font-weight:400; line-height:1.15; margin-top:18px;}
+  .feature-grid{
+    display:grid; grid-template-columns:repeat(3, 1fr); gap:1px;
+    background:var(--line); border:1px solid var(--line);
+  }
+  .feature-card{
+    background:var(--paper); padding:42px 34px; min-height:230px;
+    display:flex; flex-direction:column; justify-content:space-between;
+    transition:background .3s;
+  }
+  .feature-card:hover{background:#fff;}
+  .feature-num{font-family:'Fraunces', serif; font-style:italic; color:var(--gold); font-size:14px;}
+  .feature-card h4{font-size:19px; font-weight:500; margin:26px 0 10px; font-family:'Work Sans', sans-serif;}
+  .feature-card p{font-size:14px; color:var(--ink-soft); line-height:1.6; font-weight:300;}
+  @media(max-width:900px){ .feature-grid{grid-template-columns:1fr 1fr;} }
+  @media(max-width:600px){ .feature-grid{grid-template-columns:1fr;} }
+
+  /* ---------- GALLERY ---------- */
+  .gallery-section{padding:0 0 160px;}
+  .gallery-head{
+    display:flex; justify-content:space-between; align-items:flex-end;
+    margin-bottom:50px; gap:20px; flex-wrap:wrap;
+  }
+  .gallery-head h2{font-size:clamp(30px,4vw,48px); font-weight:400;}
+  .gallery-head p{max-width:340px; font-size:14px; color:var(--ink-soft); font-weight:300; line-height:1.6;}
+  .masonry{
+    columns:3; column-gap:14px;
+  }
+  .masonry figure{
+    break-inside:avoid; margin:0 0 14px; overflow:hidden; position:relative;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .masonry figure.tall{aspect-ratio:3/4;}
+  .masonry figure.short{aspect-ratio:4/3;}
+  .masonry figure::after{
+    content:''; position:absolute; inset:0; opacity:0.3; mix-blend-mode:overlay;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+  .masonry svg{width:26%; position:relative; z-index:2; transition:transform .5s cubic-bezier(.2,.7,.2,1), opacity .4s; color:inherit; stroke:currentColor;}
+  .masonry figure:hover svg{transform:scale(1.12);}
+  .masonry figure.has-photo svg{opacity:0;}
+  .masonry .photo-fallback{z-index:1;}
+  .masonry figcaption{
+    position:absolute; left:0; right:0; bottom:0; padding:18px 20px; z-index:3;
+    background:linear-gradient(0deg, rgba(10,8,6,0.55), transparent);
+    color:#fff; font-size:12px; letter-spacing:0.08em; text-transform:uppercase;
+  }
+  .g-1{background:linear-gradient(150deg,#e7ded0,#cbb98f); color:#3a2c20;}
+  .g-2{background:linear-gradient(150deg,#c98a68,#a8543a); color:#fbf3ea;}
+  .g-3{background:linear-gradient(150deg,#5c4530,#2c211a); color:#e8c9a0;}
+  .g-4{background:linear-gradient(150deg,#8c8070,#4a443c); color:#f6f2ea;}
+  .g-5{background:linear-gradient(150deg,#3a2c20,#1b1712); color:#e8c9a0;}
+  .g-6{background:linear-gradient(150deg,#b15c3f,#6d3322); color:#fbf3ea;}
+  @media(max-width:900px){ .masonry{columns:2;} }
+  @media(max-width:560px){ .masonry{columns:1;} }
+
+  /* ---------- PRICING ---------- */
+  .pricing{padding:20px 0 170px;}
+  .pricing-head{max-width:640px; margin-bottom:64px;}
+  .pricing-head h2{font-size:clamp(30px,4vw,48px); font-weight:400; margin-top:18px; line-height:1.15;}
+  .price-grid{
+    display:grid; grid-template-columns:repeat(3,1fr); gap:0;
+    border:1px solid var(--line);
+  }
+  .price-card{
+    padding:48px 36px; border-right:1px solid var(--line);
+    display:flex; flex-direction:column;
+  }
+  .price-card:last-child{border-right:none;}
+  .price-card.featured{background:var(--ink); color:var(--cream);}
+  .price-card.featured .price-note, .price-card.featured .price-cop{color:rgba(246,242,234,0.62);}
+  .price-card.featured .price-list li{border-top-color:rgba(246,242,234,0.16);}
+  .price-plan{font-size:12.5px; letter-spacing:0.16em; text-transform:uppercase; color:var(--rust); font-weight:600;}
+  .price-card.featured .price-plan{color:#E8C9A0;}
+  .price-amount{
+    font-family:'Fraunces', serif; font-size:46px; margin:20px 0 2px; font-weight:400;
+  }
+  .price-cop{font-size:12.5px; color:var(--ink-soft); margin-bottom:6px;}
+  .price-note{font-size:12.5px; color:var(--ink-soft); margin-bottom:28px;}
+  .price-list{list-style:none; flex:1;}
+  .price-list li{
+    font-size:13.8px; padding:13px 0; border-top:1px solid var(--line); font-weight:300;
+  }
+  .price-list li:first-child{border-top:none;}
+  .price-cta{
+    margin-top:28px; text-align:center; padding:13px 0;
+    border:1px solid var(--ink); font-size:12.5px; letter-spacing:0.06em; text-transform:uppercase;
+    transition:background .25s, color .25s;
+  }
+  .price-card.featured .price-cta{border-color:var(--cream); color:var(--cream);}
+  .price-card:not(.featured) .price-cta:hover{background:var(--ink); color:var(--paper);}
+  .price-card.featured .price-cta:hover{background:var(--cream); color:var(--ink);}
+  @media(max-width:900px){
+    .price-grid{grid-template-columns:1fr;}
+    .price-card{border-right:none; border-top:1px solid var(--line);}
+    .price-card:first-child{border-top:none;}
+  }
+
+  /* ---------- CTA / WAITLIST ---------- */
+  .cta-band{
+    position:relative; padding:140px 0; text-align:center; overflow:hidden;
+    background:var(--ink); color:var(--cream);
+  }
+  .cta-band .bg{
+    position:absolute; inset:0; opacity:0.55;
+    background:
+      radial-gradient(circle at 20% 30%, rgba(232,201,160,0.18) 0%, transparent 1.6%),
+      radial-gradient(circle at 70% 60%, rgba(232,201,160,0.16) 0%, transparent 1.4%),
+      radial-gradient(circle at 85% 20%, rgba(232,201,160,0.15) 0%, transparent 1.2%),
+      radial-gradient(circle at 40% 75%, rgba(232,201,160,0.14) 0%, transparent 1.3%),
+      radial-gradient(ellipse 60% 60% at 50% 50%, rgba(177,92,63,0.35), transparent 70%);
+  }
+  .cta-inner{position:relative; z-index:2; max-width:640px; margin:0 auto; padding:0 24px;}
+  .cta-band .eyebrow{color:#E8C9A0;}
+  .cta-band h2{font-size:clamp(30px,4.4vw,52px); margin:20px 0 16px; font-weight:400; line-height:1.15;}
+  .cta-band p{font-size:15.5px; color:rgba(246,242,234,0.72); font-weight:300; max-width:460px; margin:0 auto 40px;}
+  .waitlist-form{
+    display:flex; gap:10px; max-width:440px; margin:0 auto; flex-wrap:wrap; justify-content:center;
+  }
+  .waitlist-form input{
+    flex:1; min-width:220px; padding:16px 18px; background:transparent;
+    border:1px solid rgba(246,242,234,0.4); color:#fff; font-size:14px; font-family:'Work Sans',sans-serif;
+  }
+  .waitlist-form input::placeholder{color:rgba(246,242,234,0.5);}
+  .waitlist-form button{
+    background:var(--rust); color:#fff; border:none; padding:16px 28px;
+    font-size:13px; letter-spacing:0.05em; text-transform:uppercase; font-weight:500; cursor:pointer;
+    transition:background .25s;
+  }
+  .waitlist-form button:hover{background:var(--rust-dark);}
+  .form-note{font-size:12px; color:rgba(246,242,234,0.45); margin-top:16px;}
+  .thanks{display:none; font-family:'Fraunces', serif; font-size:19px; font-style:italic; color:#E8C9A0;}
+
+  /* ---------- FOOTER ---------- */
+  footer{padding:70px 0 40px; border-top:1px solid var(--line);}
+  .footer-top{
+    display:flex; justify-content:space-between; gap:40px; flex-wrap:wrap;
+    padding-bottom:50px;
+  }
+  .footer-brand .logo{display:block; margin-bottom:16px;}
+  .footer-brand p{font-size:13.5px; color:var(--ink-soft); max-width:280px; font-weight:300; line-height:1.6;}
+  .footer-cols{display:flex; gap:70px; flex-wrap:wrap;}
+  .footer-col h5{
+    font-size:12px; letter-spacing:0.1em; text-transform:uppercase; color:var(--ink-soft);
+    margin-bottom:18px; font-weight:500;
+  }
+  .footer-col a{
+    display:block; font-size:14px; margin-bottom:11px; opacity:0.82; transition:opacity .2s;
+  }
+  .footer-col a:hover{opacity:1; color:var(--rust);}
+  .footer-bottom{
+    display:flex; justify-content:space-between; padding-top:26px; border-top:1px solid var(--line);
+    font-size:12.5px; color:var(--ink-soft); flex-wrap:wrap; gap:10px;
+  }
+</style>
+</head>
+<body>
+
+<nav id="nav">
+  <a href="#top" class="logo">memoria<span>.</span></a>
+  <div class="nav-links">
+    <a href="#como-funciona">Cómo funciona</a>
+    <a href="#tecnologia">Tecnología</a>
+    <a href="#galeria">Galería</a>
+    <a href="#precios">Precios</a>
+  </div>
+  <a href="#lista" class="nav-cta">Únete a la lista</a>
+</nav>
+
+<header class="hero" id="top">
+  <div class="hero-bg"></div>
+  <img class="photo-fallback" alt="" src="img/hero-boda.jpg" onload="this.classList.add('loaded')" onerror="this.remove()">
+  <div class="hero-scrim"></div>
+  <div class="hero-content">
+    <span class="hero-tag">Fotos y videos del evento · Todos los invitados · En vivo</span>
+    <h1>Cada mesa,<br>cada baile, <em>cada risa.</em></h1>
+    <p class="hero-sub">Tus invitados sacan el teléfono, escanean o acercan la tarjeta, y sus fotos aparecen en tu galería en tiempo real. Al final, la IA arma el resumen. Sin apps. Sin fricción.</p>
+    <div class="hero-actions">
+      <a href="#lista" class="btn-primary">Reserva tu evento</a>
+      <a href="#como-funciona" class="btn-ghost">Ver cómo funciona</a>
+    </div>
+  </div>
+  <span class="scroll-cue">Desplázate</span>
+</header>
+
+<section class="manifesto">
+  <div class="wrap">
+    <span class="eyebrow reveal">Nuestra idea</span>
+    <h2 class="reveal delay-1">Las mejores fotos de tu evento no las toma el fotógrafo. <i>Las toman tus invitados</i> — solo que hoy se quedan perdidas en 200 celulares distintos.</h2>
+  </div>
+</section>
+
+<section class="steps" id="como-funciona">
+  <div class="wrap">
+
+    <div class="step-row">
+      <div class="step-media reveal-scale tone-1">
+        <img class="photo-fallback" alt="" src="img/paso1-qr.jpg" onload="this.classList.add('loaded'); this.parentElement.classList.add('has-photo')" onerror="this.remove()">
+        <svg viewBox="0 0 100 100" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="18" y="12" width="34" height="58" rx="4"/>
+          <line x1="18" y1="58" x2="52" y2="58"/>
+          <rect x="30" y="30" width="12" height="12"/>
+          <path d="M30 30h2M30 40h2M40 30h2M40 40h2"/>
+          <path d="M60 34c8 0 14 6 14 14s-6 14-14 14" stroke-dasharray="4 4"/>
+          <circle cx="60" cy="48" r="3"/>
+        </svg>
+      </div>
+      <div class="step-text reveal">
+        <span class="step-num">01 — Llega</span>
+        <h3>Escanea el QR o acerca el celular a la tarjeta NFC</h3>
+        <p>En cada mesa dejamos una tarjeta con QR y chip NFC. Sin apps, sin registro: se abre directo en el navegador del invitado.</p>
+      </div>
+    </div>
+
+    <div class="step-row rev">
+      <div class="step-media reveal-scale tone-2">
+        <img class="photo-fallback" alt="" src="img/paso2-baile.jpg" onload="this.classList.add('loaded'); this.parentElement.classList.add('has-photo')" onerror="this.remove()">
+        <svg viewBox="0 0 100 100" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="14" y="30" width="56" height="42" rx="5"/>
+          <path d="M32 30l5-8h14l5 8"/>
+          <circle cx="42" cy="51" r="12"/>
+          <circle cx="42" cy="51" r="5"/>
+          <circle cx="63" cy="38" r="2"/>
+          <path d="M74 40c6 4 10 10 10 18s-6 16-14 18" stroke-dasharray="3 5"/>
+        </svg>
+      </div>
+      <div class="step-text reveal">
+        <span class="step-num">02 — Comparte</span>
+        <h3>Sube fotos y videos, cumple retos, encuentra tu cara</h3>
+        <p>Reconocimiento facial para que cada quien encuentre sus fotos, retos divertidos para animar la fiesta, y moderación antes de que nada se publique.</p>
+      </div>
+    </div>
+
+    <div class="step-row">
+      <div class="step-media reveal-scale tone-3">
+        <img class="photo-fallback" alt="" src="img/paso3-mesa.jpg" onload="this.classList.add('loaded'); this.parentElement.classList.add('has-photo')" onerror="this.remove()">
+        <svg viewBox="0 0 100 100" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="16" y="22" width="18" height="18" rx="2"/>
+          <rect x="41" y="18" width="18" height="18" rx="2"/>
+          <rect x="16" y="48" width="18" height="18" rx="2"/>
+          <rect x="41" y="44" width="18" height="18" rx="2"/>
+          <path d="M66 30l10 6v28l-10 6z"/>
+          <path d="M66 36v22"/>
+        </svg>
+      </div>
+      <div class="step-text reveal">
+        <span class="step-num">03 — Revive</span>
+        <h3>La IA arma tu video-resumen y el álbum final</h3>
+        <p>Al cerrar el evento, seleccionamos los mejores momentos y generamos un video editado automáticamente, listo para descargar y compartir.</p>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<section class="features" id="tecnologia">
+  <div class="wrap">
+    <div class="features-head">
+      <span class="eyebrow reveal">Tecnología</span>
+      <h2 class="reveal delay-1">Todo lo que corre por debajo, sin que tus invitados lo noten.</h2>
+    </div>
+    <div class="feature-grid reveal">
+      <div class="feature-card"><div class="feature-num">01</div><h4>Reconocimiento facial</h4><p>Cada invitado encuentra automáticamente las fotos donde aparece, sin buscar entre miles.</p></div>
+      <div class="feature-card"><div class="feature-num">02</div><h4>QR + NFC</h4><p>Doble acceso sin fricción: escaneo o tap. Cero apps que instalar, cero contraseñas.</p></div>
+      <div class="feature-card"><div class="feature-num">03</div><h4>Retos y ranking en vivo</h4><p>Misiones divertidas para los invitados, con un ranking proyectado en pantalla durante la fiesta.</p></div>
+      <div class="feature-card"><div class="feature-num">04</div><h4>Moderación automática</h4><p>Cada foto pasa un filtro de contenido antes de aparecer en el feed en vivo.</p></div>
+      <div class="feature-card"><div class="feature-num">05</div><h4>Video-resumen con IA</h4><p>Un highlight reel armado solo, con los mejores momentos, música y transiciones.</p></div>
+      <div class="feature-card"><div class="feature-num">06</div><h4>Personalización total</h4><p>Colores, tipografía, frames y stickers con la identidad de tu evento.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="gallery-section" id="galeria">
+  <div class="wrap">
+    <div class="gallery-head">
+      <h2 class="reveal">Momentos que ya imaginamos contigo.</h2>
+      <p class="reveal delay-1">Bodas, cumpleaños, lanzamientos corporativos, carreras — el mismo sistema se adapta a cualquier evento con invitados con celular en mano.</p>
+    </div>
+    <div class="masonry reveal">
+      <figure class="g-1 tall">
+        <img class="photo-fallback" alt="" src="img/paso3-mesa.jpg" onload="this.classList.add('loaded'); this.parentElement.classList.add('has-photo')" onerror="this.remove()">
+        <svg viewBox="0 0 100 100" fill="none" stroke-width="2"><circle cx="38" cy="50" r="16"/><circle cx="62" cy="50" r="16"/></svg>
+        <figcaption>Bodas</figcaption>
+      </figure>
+      <figure class="g-2 short">
+        <img class="photo-fallback" alt="" src="img/galeria-cumpleanos.jpg" onload="this.classList.add('loaded'); this.parentElement.classList.add('has-photo')" onerror="this.remove()">
+        <svg viewBox="0 0 100 100" fill="none" stroke-width="2"><path d="M50 20c-8 0-8 12 0 12s8-12 0-12z"/><path d="M50 32v18M40 50h20l-4 30H44z"/><path d="M30 40l6 4M70 40l-6 4"/></svg>
+        <figcaption>Cumpleaños</figcaption>
+      </figure>
+      <figure class="g-3 short">
+        <img class="photo-fallback" alt="" src="img/galeria-carrera.jpg" onload="this.classList.add('loaded'); this.parentElement.classList.add('has-photo')" onerror="this.remove()">
+        <svg viewBox="0 0 100 100" fill="none" stroke-width="2"><circle cx="50" cy="36" r="10"/><path d="M32 78c0-14 8-24 18-24s18 10 18 24"/><path d="M20 30l10 8M80 30l-10 8"/></svg>
+        <figcaption>Carreras</figcaption>
+      </figure>
+      <figure class="g-4 tall">
+        <img class="photo-fallback" alt="" src="img/galeria-corporativo.jpg" onload="this.classList.add('loaded'); this.parentElement.classList.add('has-photo')" onerror="this.remove()">
+        <svg viewBox="0 0 100 100" fill="none" stroke-width="2"><rect x="26" y="24" width="16" height="52"/><rect x="58" y="14" width="16" height="62"/><path d="M26 40h16M58 34h16"/></svg>
+        <figcaption>Corporativos</figcaption>
+      </figure>
+      <figure class="g-5 short">
+        <img class="photo-fallback" alt="" src="img/galeria-fiesta.jpg" onload="this.classList.add('loaded'); this.parentElement.classList.add('has-photo')" onerror="this.remove()">
+        <svg viewBox="0 0 100 100" fill="none" stroke-width="2"><circle cx="50" cy="30" r="10"/><path d="M35 40l30 0M40 45l20 0M32 55c8-4 28-4 36 0"/><path d="M50 62v14M40 82h20"/></svg>
+        <figcaption>Fiestas</figcaption>
+      </figure>
+      <figure class="g-6 tall">
+        <img class="photo-fallback" alt="" src="img/paso2-baile.jpg" onload="this.classList.add('loaded'); this.parentElement.classList.add('has-photo')" onerror="this.remove()">
+        <svg viewBox="0 0 100 100" fill="none" stroke-width="2"><rect x="24" y="30" width="52" height="38" rx="4"/><circle cx="50" cy="49" r="11"/><rect x="60" y="36" width="8" height="6" rx="1"/></svg>
+        <figcaption>En vivo</figcaption>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<section class="pricing" id="precios">
+  <div class="wrap">
+    <div class="pricing-head">
+      <span class="eyebrow reveal">Precios</span>
+      <h2 class="reveal delay-1">Tres niveles, del más simple al más completo con IA.</h2>
+    </div>
+    <div class="price-grid reveal">
+      <div class="price-card">
+        <span class="price-plan">Básico</span>
+        <div class="price-amount">$45<span style="font-size:16px;">+</span></div>
+        <div class="price-cop">≈ COP 146.000</div>
+        <div class="price-note">Por evento pequeño · desde 50 invitados</div>
+        <ul class="price-list">
+          <li>Subida ilimitada por QR/NFC</li>
+          <li>Galería en vivo</li>
+          <li>Moderación manual</li>
+          <li>Frames y colores personalizados</li>
+          <li>3 meses de almacenamiento</li>
+        </ul>
+        <a href="#lista" class="price-cta">Elegir Básico</a>
+      </div>
+      <div class="price-card featured">
+        <span class="price-plan">Pro</span>
+        <div class="price-amount">$89<span style="font-size:16px;">+</span></div>
+        <div class="price-cop">≈ COP 289.000</div>
+        <div class="price-note">El más elegido · desde 50 invitados</div>
+        <ul class="price-list">
+          <li>Todo lo de Básico</li>
+          <li>Reconocimiento facial</li>
+          <li>Retos y ranking en vivo</li>
+          <li>Moderación automática con IA</li>
+          <li>12 meses de almacenamiento</li>
+        </ul>
+        <a href="#lista" class="price-cta">Elegir Pro</a>
+      </div>
+      <div class="price-card">
+        <span class="price-plan">Premium</span>
+        <div class="price-amount">$149<span style="font-size:16px;">+</span></div>
+        <div class="price-cop">≈ COP 484.000</div>
+        <div class="price-note">Todo con IA · desde 50 invitados</div>
+        <ul class="price-list">
+          <li>Todo lo de Pro</li>
+          <li>Video-resumen generado con IA</li>
+          <li>Mejora de fotos con IA</li>
+          <li>Verificación OTP para invitados clave</li>
+          <li>24 meses de almacenamiento</li>
+        </ul>
+        <a href="#lista" class="price-cta">Elegir Premium</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="cta-band" id="lista">
+  <div class="bg"></div>
+  <img class="photo-fallback" alt="" style="opacity:0" src="img/hero-boda.jpg" onload="this.style.opacity='0.32'" onerror="this.remove()">
+  <div class="cta-inner">
+    <span class="eyebrow reveal">Lista de espera</span>
+    <h2 class="reveal delay-1">Sé de los primeros en probarlo con tu evento.</h2>
+    <p class="reveal delay-1">Estamos abriendo cupos limitados para la primera tanda de eventos. Déjanos tu correo y te contactamos con acceso anticipado y precio de fundador.</p>
+    <form class="waitlist-form reveal delay-2" id="waitlistForm">
+      <input type="email" id="emailInput" placeholder="tu@correo.com" required>
+      <button type="submit">Unirme</button>
+    </form>
+    <p class="thanks" id="thanksMsg">Listo — te escribimos pronto. Gracias por confiar en nosotros.</p>
+    <p class="form-note reveal delay-2">Sin spam. Solo te escribimos cuando tengamos cupo para tu evento.</p>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <a href="#top" class="logo">memoria<span>.</span></a>
+        <p>La galería viva de tu evento: fotos y videos de todos tus invitados, organizados con IA, en tiempo real.</p>
+      </div>
+      <div class="footer-cols">
+        <div class="footer-col">
+          <h5>Producto</h5>
+          <a href="#como-funciona">Cómo funciona</a>
+          <a href="#tecnologia">Tecnología</a>
+          <a href="#precios">Precios</a>
+        </div>
+        <div class="footer-col">
+          <h5>Casos de uso</h5>
+          <a href="#galeria">Bodas</a>
+          <a href="#galeria">Fiestas</a>
+          <a href="#galeria">Corporativos</a>
+          <a href="#galeria">Carreras</a>
+        </div>
+        <div class="footer-col">
+          <h5>Contacto</h5>
+          <a href="#lista">Lista de espera</a>
+          <a href="mailto:hola@memoria.app">hola@memoria.app</a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 Memoria. Todos los derechos reservados.</span>
+      <span>Diseño conceptual — landing de validación de producto.</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // Nav background on scroll
+  const nav = document.getElementById('nav');
+  window.addEventListener('scroll', () => {
+    if (window.scrollY > 40) nav.classList.add('scrolled');
+    else nav.classList.remove('scrolled');
+  });
+
+  // Scroll reveal
+  const revealEls = document.querySelectorAll('.reveal, .reveal-scale');
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('is-visible');
+        io.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.15, rootMargin: '0px 0px -60px 0px' });
+  revealEls.forEach(el => io.observe(el));
+
+  // Hero subtle parallax
+  const heroBg = document.querySelector('.hero-bg');
+  window.addEventListener('scroll', () => {
+    const y = window.scrollY;
+    if (y < window.innerHeight) {
+      heroBg.style.transform = `scale(1.08) translateY(${y * 0.12}px)`;
+    }
+  });
+
+  // Waitlist form (front-end only demo — conectar a backend real / Airtable / Zapier antes de publicar)
+  const form = document.getElementById('waitlistForm');
+  const thanks = document.getElementById('thanksMsg');
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    form.style.display = 'none';
+    thanks.style.display = 'block';
+  });
+</script>
+
+</body>
+</html>
